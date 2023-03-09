@@ -61,14 +61,16 @@ export class PhysicsObject implements ReplResult {
   public applyForces(word_time: number) {
     this.forces = this.forces
       .filter(
-        (force: Force) => force.start_time < word_time
-        && force.start_time + force.duration > word_time,
+        (force: Force) => force.start_time + force.duration > word_time,
       );
 
-    const resForce = this.forces.reduce(
-      (resForce: b2Vec2, force: Force) => resForce.Add(force.direction.Scale(force.magnitude)),
-      new b2Vec2(),
-    );
+    const resForce = this.forces.filter(
+      (force: Force) => force.start_time < word_time,
+    )
+      .reduce(
+        (resForce: b2Vec2, force: Force) => resForce.Add(force.direction.Scale(force.magnitude)),
+        new b2Vec2(),
+      );
 
     this.body.ApplyForceToCenter(resForce);
   }
@@ -105,8 +107,8 @@ export class PhysicsWorld {
   private timer: Timer;
   private b2World: b2World;
   private iterationsConfig: b2StepConfig = {
-    velocityIterations: 1,
-    positionIterations: 1,
+    velocityIterations: 8,
+    positionIterations: 3,
   };
 
   constructor() {
