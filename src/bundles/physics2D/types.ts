@@ -1,4 +1,4 @@
-import { b2Body, b2Shape, b2BodyDef, b2BodyType, b2PolygonShape, b2StepConfig, b2Vec2, b2World } from '@box2d/core';
+import { b2Body, b2Shape, b2Fixture, b2BodyDef, b2BodyType, b2PolygonShape, b2StepConfig, b2Vec2, b2World } from '@box2d/core';
 import { ReplResult } from '../../typings/type_helpers';
 
 export class Vector2 extends b2Vec2 implements ReplResult{
@@ -11,6 +11,17 @@ export type Force = {
   duration: number;
   start_time: number;
 };
+
+type ForceWithPos = {
+  force: Force,
+  pos: b2Vec2,
+}
+
+type TouchingObjects = {
+  obj1: PhysicsObject,
+  obj2: PhysicsObject,
+  start_time: number;
+}
 
 export class Timer {
   private time: number;
@@ -32,7 +43,9 @@ export class Timer {
 export class PhysicsObject implements ReplResult {
   private body: b2Body;
   private shape: b2Shape;
-  private forces: Force[] = [];
+  private fixture: b2Fixture;
+  private forcesCentered: Force[] = [];
+  private forcesAtAPoint: ForceWithPos[] = [];
 
   constructor(
     position: b2Vec2,
@@ -47,25 +60,34 @@ export class PhysicsObject implements ReplResult {
     });
     this.shape = shape;
 
-    this.body.CreateFixture({
+    this.fixture = this.body.CreateFixture({
       shape: this.shape,
       density: 1,
       friction: 0.3,
     });
   }
 
-  public addForce(force: Force) {
-    this.forces.push(force);
+  public changeDensity(density: number) {
+    this.fixture.SetDensity(density);
+    this.body.ResetMassData();
   }
 
-  public applyForces(word_time: number) {
-    this.forces = this.forces
-      .filter(
-        (force: Force) => force.start_time + force.duration > word_time,
-      );
+  public addForceCentered(force: Force) {
+    this.forcesCentered.push(force);
+  }
 
-    const resForce = this.forces.filter(
-      (force: Force) => force.start_time < word_time,
+  public addForceAtAPoint(force: Force, pos: b2Vec2) {
+    this.forcesAtAPoint.push({force: force, pos: pos});
+  }
+
+  public applyForcesToCenter(world_time: number) {
+    this.forcesCentered = this.forcesCentered
+    .filter(
+      (force: Force) => force.start_time + force.duration > world_time,
+    );
+
+    const resForce = this.forcesCentered.filter(
+      (force: Force) => force.start_time < world_time,
     )
       .reduce(
         (resForce: b2Vec2, force: Force) => resForce.Add(force.direction.Scale(force.magnitude)),
@@ -73,6 +95,23 @@ export class PhysicsObject implements ReplResult {
       );
 
     this.body.ApplyForceToCenter(resForce);
+  }
+
+  public applyForcesAtAPoint(world_time: number) {
+    this.forcesAtAPoint = this.forcesAtAPoint
+    .filter(
+      (forceWithPos: ForceWithPos) => forceWithPos.force.start_time + forceWithPos.force.duration > world_time,
+    );
+
+    this.forcesAtAPoint.forEach(forceWithPos => {
+      const force = forceWithPos.force;
+      this.body.ApplyForce(force.direction.Scale(force.magnitude), forceWithPos.pos);
+    });
+  }
+
+  public applyForces(world_time: number) {
+    this.applyForcesToCenter(world_time);
+    this.applyForcesAtAPoint(world_time);
   }
 
   public setRotation(rot: number) {
@@ -99,22 +138,45 @@ export class PhysicsObject implements ReplResult {
     return this.body.GetLinearVelocity();
   }
 
-  public toReplString = () => `Position: [${this.getPosition().x},${this.getPosition().x}], Rotation: ${this.getRotation()}`;
+  public getAngularVelocity() {
+    return this.body.GetAngularVelocity();
+  }
+
+  public getMass() {
+    return this.body.GetMass();
+  }
+
+  public toReplString = () => `
+Mass: ${this.getMass()}
+
+Position: [${this.getPosition().x},${this.getPosition().y}]
+Velocity: [${this.getVelocity().x},${this.getVelocity().y}] 
+
+Rotation: ${this.getRotation()}
+AngularVelocity: [${this.getAngularVelocity()}]`;
 }
 
 export class PhysicsWorld {
+  private b2World: b2World;
   private b2Objects: PhysicsObject[];
   private timer: Timer;
-  private b2World: b2World;
+  
+  private touchingObjects: TouchingObjects[];
+
+
   private iterationsConfig: b2StepConfig = {
     velocityIterations: 8,
     positionIterations: 3,
   };
 
   constructor() {
+    this.b2World = b2World.Create(new b2Vec2());
     this.b2Objects = [];
     this.timer = new Timer();
-    this.b2World = b2World.Create(new b2Vec2());
+
+    this.touchingObjects = [];
+
+    // this.b2World.SetContactListener()
   }
 
   public setGravity(gravity: b2Vec2) {
@@ -123,7 +185,6 @@ export class PhysicsWorld {
 
   public addObject(obj: PhysicsObject) {
     this.b2Objects.push(obj);
-    // this.world.
   }
 
   public createBody(bodyDef: b2BodyDef) {
@@ -131,14 +192,13 @@ export class PhysicsWorld {
   }
 
   public makeGround(height: number) {
-    const vector: b2Vec2 = new b2Vec2();
-    vector.Set(0, height);
     const groundBody: b2Body = this.createBody({
       type: b2BodyType.b2_staticBody,
-      position: vector,
+      position: new b2Vec2(0, height - 10),
     });
     const groundShape: b2PolygonShape = new b2PolygonShape()
-      .SetAsBox(1000, 10);
+      .SetAsBox(10000, 10);
+
     groundBody.CreateFixture({
       shape: groundShape,
       density: 1,

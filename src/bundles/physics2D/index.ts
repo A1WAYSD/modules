@@ -15,5 +15,8 @@ export {
   get_velocity,
   apply_force,
   make_ground,
-  make_circle_object
+  make_circle_object,
+  get_angular_velocity,
+  apply_force_to_center,
+  set_density
 } from './functions';

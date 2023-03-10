@@ -39,16 +39,18 @@ export function make_vector(x: number, y: number): Vector2 {
  * 
  * @param dir direction of force
  * @param mag magnitude of force
+ * @param dur duration of force
+ * @param start start time of force
  * @returns new force
  * 
  * @category Dynamics
  */
-export function make_force(dir: Vector2, mag: number): Force {
+export function make_force(dir: Vector2, mag: number, dur: number, start: number): Force {
   let force: Force = {
     direction: dir,
     magnitude: mag,
-    duration: 0,
-    start_time: 0,
+    duration: dur,
+    start_time: start,
   };
   return force;
 }
@@ -57,16 +59,25 @@ export function make_force(dir: Vector2, mag: number): Force {
  * Apply force to an object.
  * 
  * @param force existing force
- * @param start start time of force
- * @param dur duration of force
  * @param obj existing object the force applies on
  * 
  * @category Dynamics
  */
-export function apply_force(force: Force, start: number, dur: number, obj: PhysicsObject) {
-  force.start_time = start;
-  force.duration = dur;
-  obj.addForce(force);
+export function apply_force_to_center(force: Force, obj: PhysicsObject) {
+  obj.addForceCentered(force);
+}
+
+/**
+ * Apply force to an object at a given world point.
+ * 
+ * @param force existing force
+ * @param pos world point the force is applied on
+ * @param obj existing object the force applies on
+ * 
+ * @category Dynamics
+ */
+export function apply_force(force: Force, pos: Vector2, obj: PhysicsObject) {
+  obj.addForceAtAPoint(force, pos);
 }
 
 /**
@@ -85,19 +96,19 @@ export function set_gravity(v: Vector2) {
   world.setGravity(v);
 }
 
-// /**
-//  * Make the ground body of the world.
-//  * 
-//  * @param x height of ground
-//  * 
-//  * @category Main
-//  */
-// export function make_ground(x: number) {
-//   world.makeGround(x);
-// }
-export function make_ground() {
-  world.makeGround(-5);
+/**
+ * Make the ground body of the world.
+ * 
+ * @param x height of ground
+ * 
+ * @category Main
+ */
+export function make_ground(x: number) {
+  world.makeGround(x);
 }
+// export function make_ground() {
+//   world.makeGround(-5);
+// }
 
 /**
  * Make a box object with given initial position, rotation, velocity and size.
@@ -113,7 +124,7 @@ export function make_ground() {
 export function make_box_object(pos: Vector2,
   rot: number, velc: Vector2, size: Vector2): PhysicsObject {
   const newObj: PhysicsObject = new PhysicsObject(pos, rot, new b2PolygonShape()
-    .SetAsBox(size.x, size.y), world);
+    .SetAsBox(size.x / 2, size.y / 2), world);
   newObj.setLinearVelocity(velc);
 
   return newObj;
@@ -185,4 +196,18 @@ export function get_velocity(obj: PhysicsObject): Vector2 {
   return new Vector2(obj.getVelocity().x, obj.getVelocity().y);
 }
 
+/**
+ * Get current angular velocity of the object.
+ * 
+ * @param obj exisiting object
+ * @returns angular velocity vector
+ * 
+ * @category Main
+ */
+export function get_angular_velocity(obj: PhysicsObject): Vector2 {
+  return new Vector2(obj.getAngularVelocity());
+}
 
+export function set_density(obj: PhysicsObject, density: number) {
+  obj.changeDensity(density);
+}
