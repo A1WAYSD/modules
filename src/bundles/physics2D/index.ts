@@ -18,5 +18,6 @@ export {
   make_circle_object,
   get_angular_velocity,
   apply_force_to_center,
-  set_density
+  set_density,
+  is_touching
 } from './functions';

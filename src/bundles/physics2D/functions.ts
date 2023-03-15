@@ -211,3 +211,10 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
 export function set_density(obj: PhysicsObject, density: number) {
   obj.changeDensity(density);
 }
+
+export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
+  if(obj1.isTouching(obj2) == undefined) {
+    return false;
+  }
+  return true;
+}

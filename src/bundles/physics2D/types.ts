@@ -1,4 +1,4 @@
-import { b2Body, b2Shape, b2Fixture, b2BodyDef, b2BodyType, b2PolygonShape, b2StepConfig, b2Vec2, b2World } from '@box2d/core';
+import { b2Body, b2Shape, b2Fixture, b2BodyDef, b2BodyType, b2PolygonShape, b2StepConfig, b2Vec2, b2World, b2ContactListener, b2Contact, b2ContactEdge } from '@box2d/core';
 import { ReplResult } from '../../typings/type_helpers';
 
 export class Vector2 extends b2Vec2 implements ReplResult{
@@ -18,8 +18,8 @@ type ForceWithPos = {
 }
 
 type TouchingObjects = {
-  obj1: PhysicsObject,
-  obj2: PhysicsObject,
+  fix1: b2Fixture,
+  fix2: b2Fixture,
   start_time: number;
 }
 
@@ -146,6 +146,16 @@ export class PhysicsObject implements ReplResult {
     return this.body.GetMass();
   }
 
+  public isTouching(obj2: PhysicsObject) {
+    let ce = this.body.GetContactList();
+    while (ce != null) {
+      if (ce.other == obj2.body && ce.contact.IsTouching()) {
+        return true;
+      }
+      ce = ce.next;
+    }
+  }
+
   public toReplString = () => `
 Mass: ${this.getMass()}
 
@@ -161,7 +171,7 @@ export class PhysicsWorld {
   private b2Objects: PhysicsObject[];
   private timer: Timer;
   
-  private touchingObjects: TouchingObjects[];
+  // private touchingObjects: TouchingObjects[];
 
 
   private iterationsConfig: b2StepConfig = {
@@ -174,9 +184,27 @@ export class PhysicsWorld {
     this.b2Objects = [];
     this.timer = new Timer();
 
-    this.touchingObjects = [];
+    // this.touchingObjects = [];
 
-    // this.b2World.SetContactListener()
+    // const contactListener: b2ContactListener = new b2ContactListener();
+    // contactListener.BeginContact = (contact: b2Contact) => {
+    //   const touchingObj: TouchingObjects = {
+    //     fix1: contact.GetFixtureA(),
+    //     fix2: contact.GetFixtureB(),
+    //     start_time: this.timer.getTime()
+    //   }
+    //   this.touchingObjects.push(touchingObj);
+    // }
+    // contactListener.EndContact = (contact: b2Contact) => {
+    //   const touchingObj: TouchingObjects = {
+    //     fix1: contact.GetFixtureA(),
+    //     fix2: contact.GetFixtureB(),
+    //     start_time: this.timer.getTime()
+    //   }
+    //   // do sth
+    // }
+
+    // this.b2World.SetContactListener(contactListener);
   }
 
   public setGravity(gravity: b2Vec2) {
