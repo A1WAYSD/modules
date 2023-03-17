@@ -227,6 +227,14 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
   return new Vector2(obj.getAngularVelocity());
 }
 
+/**
+ * Set density of the object.
+ * 
+ * @param obj existing object
+ * @param density density
+ * 
+ * @category Main
+ */
 export function set_density(obj: PhysicsObject, density: number) {
   obj.changeDensity(density);
 }
@@ -235,9 +243,19 @@ export function set_friction(obj: PhysicsObject, friction: number) {
   obj.changeFriction(friction);
 }
 
+/**
+ * Check if two objects is touching.
+ * 
+ * @param obj1
+ * @param obj2 
+ * @returns touching state
+ * 
+ * @category Main
+ */
 export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
-  if (obj1.isTouching(obj2) === undefined) {
-    return false;
-  }
-  return true;
+  return obj1.isTouching(obj2);
+}
+
+export function impact_start_time(obj1: PhysicsObject, obj2: PhysicsObject) {
+  return world.findImpact(obj1, obj2);
 }

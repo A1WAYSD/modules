@@ -22,4 +22,5 @@ export {
   set_friction,
   is_touching,
   simulate_world,
+  impact_start_time
 } from './functions';
