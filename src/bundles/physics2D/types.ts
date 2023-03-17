@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import {
   type b2Body,
   type b2Shape,
@@ -14,6 +15,7 @@ import {
 } from '@box2d/core';
 import { type ReplResult } from '../../typings/type_helpers';
 
+export const ACCURACY = 2;
 export class Vector2 extends b2Vec2 implements ReplResult {
   public toReplString = () => `[${this.x}, ${this.y}]`;
 }
@@ -50,6 +52,10 @@ export class Timer {
 
   public getTime() {
     return this.time;
+  }
+
+  public toString() {
+    return `${this.time}`;
   }
 }
 
@@ -104,7 +110,7 @@ export class PhysicsObject implements ReplResult {
     const resForce = this.forcesCentered
       .filter((force: Force) => force.start_time < world_time)
       .reduce(
-        (resForce: b2Vec2, force: Force) => resForce.Add(force.direction.Scale(force.magnitude)),
+        (res: b2Vec2, force: Force) => res.Add(force.direction.Scale(force.magnitude)),
         new b2Vec2(),
       );
 
@@ -164,8 +170,8 @@ export class PhysicsObject implements ReplResult {
 
   public isTouching(obj2: PhysicsObject) {
     let ce = this.body.GetContactList();
-    while (ce != null) {
-      if (ce.other == obj2.body && ce.contact.IsTouching()) {
+    while (ce !== null) {
+      if (ce.other === obj2.body && ce.contact.IsTouching()) {
         return true;
       }
       ce = ce.next;
@@ -173,13 +179,16 @@ export class PhysicsObject implements ReplResult {
   }
 
   public toReplString = () => `
-Mass: ${this.getMass()}
+Mass: ${this.getMass()
+    .toFixed(ACCURACY)}
 
-Position: [${this.getPosition().x},${this.getPosition().y}]
-Velocity: [${this.getVelocity().x},${this.getVelocity().y}] 
+Position: [${this.getPosition().x.toFixed(ACCURACY)},${this.getPosition().y.toFixed(ACCURACY)}]
+Velocity: [${this.getVelocity().x.toFixed(ACCURACY)},${this.getVelocity().y.toFixed(ACCURACY)}] 
 
-Rotation: ${this.getRotation()}
-AngularVelocity: [${this.getAngularVelocity()}]`;
+Rotation: ${this.getRotation()
+    .toFixed(ACCURACY)}
+AngularVelocity: [${this.getAngularVelocity()
+    .toFixed(ACCURACY)}]`;
 }
 
 export class PhysicsWorld {
@@ -260,17 +269,23 @@ export class PhysicsWorld {
     this.timer.step(dt);
   }
 
-  public async simulate(dt: number, total: number) {
-    for (let i = 0; i < total; i += dt) {
-      this.update(dt);
-      // eslint-disable-next-line no-await-in-loop
-      await this.delay(i * dt * 1000);
-    }
+  public getB2World() {
+    return this.b2World;
   }
 
-  private delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+  public getWorldStatus(): String {
+    let world_status: String = `
+World time: ${this.timer.toString()}
 
-  public getWorld() {
-    return this.b2World;
+Objects:
+    `;
+    this.b2Objects.forEach((obj) => {
+      world_status += `
+------------------------
+${obj.toReplString()}
+------------------------
+      `;
+    });
+    return world_status;
   }
 }

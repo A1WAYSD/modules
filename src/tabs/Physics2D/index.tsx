@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { DebugDraw } from '@box2d/debug-draw';
-import { DrawShapes } from '@box2d/core';
+
 import type { DebuggerContext } from '../../typings/type_helpers';
+import DebugDrawCanvas from './DebugDrawCanvas';
 
 /**
  * <Brief description of the tab>
@@ -19,7 +19,7 @@ export default {
    * @param {DebuggerContext} context
    * @returns {boolean}
    */
-  toSpawn: (context: any) => true,
+  toSpawn: () => true,
 
   /**
    * This function will be called to render the module tab in the side contents
@@ -27,25 +27,11 @@ export default {
    * @param {DebuggerContext} context
    */
   body(context: DebuggerContext) {
-    const { context: { moduleContexts: { physics2D: { state: { b2world } } } } } = context;
-
-    const canvasRef: React.RefObject<HTMLCanvasElement> = React.createRef();
-
-    setTimeout(() => {
-      const canvas = canvasRef.current;
-      const ctx: CanvasRenderingContext2D | null = canvas ? canvas.getContext('2d') : null;
-      if (ctx) {
-        const debugDraw = new DebugDraw(ctx);
-        debugDraw.Prepare(0, 0, 1, true);
-        DrawShapes(debugDraw, b2world);
-        debugDraw.Finish();
-      }
-    }, 50);
+    const { context: { moduleContexts: { physics2D: { state: { world } } } } } = context;
 
     return (
       <div>
-        <canvas ref={canvasRef}>
-        </canvas>
+        <DebugDrawCanvas world={world}/>
       </div>
     );
   },
@@ -60,5 +46,5 @@ export default {
    * displayed in the side contents panel.
    * @see https://blueprintjs.com/docs/#icons
    */
-  iconName: 'build',
+  iconName: 'wind',
 };

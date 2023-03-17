@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 /**
  * Physics2D
  *
@@ -95,9 +96,8 @@ export function apply_force(force: Force, pos: Vector2, obj: PhysicsObject) {
  */
 export function set_gravity(v: Vector2) {
   world = new PhysicsWorld();
-  const b2world = world.getWorld();
   context.moduleContexts.physics2D.state = {
-    b2world,
+    world,
   };
   world.setGravity(v);
 }
@@ -231,7 +231,7 @@ export function set_density(obj: PhysicsObject, density: number) {
 }
 
 export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
-  if (obj1.isTouching(obj2) == undefined) {
+  if (obj1.isTouching(obj2) === undefined) {
     return false;
   }
   return true;
