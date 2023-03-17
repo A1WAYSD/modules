@@ -19,6 +19,7 @@ export {
   get_angular_velocity,
   apply_force_to_center,
   set_density,
+  set_friction,
   is_touching,
   simulate_world,
 } from './functions';

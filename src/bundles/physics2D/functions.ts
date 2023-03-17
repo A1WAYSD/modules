@@ -105,12 +105,13 @@ export function set_gravity(v: Vector2) {
 /**
  * Make the ground body of the world.
  *
- * @param x height of ground
+ * @param height height of ground
+ * @param friction friction of ground
  *
  * @category Main
  */
-export function make_ground(x: number) {
-  world.makeGround(x);
+export function make_ground(height: number, friction: number) {
+  world.makeGround(height, friction);
 }
 // export function make_ground() {
 //   world.makeGround(-5);
@@ -228,6 +229,10 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
 
 export function set_density(obj: PhysicsObject, density: number) {
   obj.changeDensity(density);
+}
+
+export function set_friction(obj: PhysicsObject, friction: number) {
+  obj.changeFriction(friction);
 }
 
 export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {

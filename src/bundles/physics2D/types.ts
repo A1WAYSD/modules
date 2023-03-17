@@ -9,9 +9,6 @@ import {
   type b2StepConfig,
   b2Vec2,
   b2World,
-  b2ContactListener,
-  b2Contact,
-  b2ContactEdge,
 } from '@box2d/core';
 import { type ReplResult } from '../../typings/type_helpers';
 
@@ -30,12 +27,6 @@ export type Force = {
 type ForceWithPos = {
   force: Force;
   pos: b2Vec2;
-};
-
-type TouchingObjects = {
-  fix1: b2Fixture;
-  fix2: b2Fixture;
-  start_time: number;
 };
 
 export class Timer {
@@ -89,6 +80,10 @@ export class PhysicsObject implements ReplResult {
   public changeDensity(density: number) {
     this.fixture.SetDensity(density);
     this.body.ResetMassData();
+  }
+
+  public changeFriction(friction: number) {
+    this.fixture.SetFriction(friction);
   }
 
   public addForceCentered(force: Force) {
@@ -176,6 +171,8 @@ export class PhysicsObject implements ReplResult {
       }
       ce = ce.next;
     }
+
+    return undefined;
   }
 
   public toReplString = () => `
@@ -243,7 +240,7 @@ export class PhysicsWorld {
     return this.b2World.CreateBody(bodyDef);
   }
 
-  public makeGround(height: number) {
+  public makeGround(height: number, friction: number) {
     const groundBody: b2Body = this.createBody({
       type: b2BodyType.b2_staticBody,
       position: new b2Vec2(0, height - 10),
@@ -257,7 +254,7 @@ export class PhysicsWorld {
     groundBody.CreateFixture({
       shape: groundShape,
       density: 1,
-      friction: 0.3,
+      friction,
     });
   }
 
