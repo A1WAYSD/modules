@@ -1,45 +1,16 @@
 import React from 'react';
 
+import { DebugDraw } from '@box2d/debug-draw';
+import { DrawShapes } from '@box2d/core';
+import type { DebuggerContext } from '../../typings/type_helpers';
+
 /**
  * <Brief description of the tab>
  * @author <Author Name>
  * @author <Author Name>
  */
 
-/**
- * React Component props for the Tab.
- */
-type Props = {
-  children?: never;
-  className?: never;
-  context?: any;
-};
 
-/**
- * React Component state for the Tab.
- */
-type State = {
-  counter: number;
-};
-
-/**
- * The main React Component of the Tab.
- */
-class Repeat extends React.Component<Props, State> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      counter: 0,
-    };
-  }
-
-  public render() {
-    const { counter } = this.state;
-    return (
-      <div>This is spawned from the repeat package. Counter is {counter}</div>
-    );
-  }
-}
 
 export default {
   /**
@@ -55,7 +26,29 @@ export default {
    * on Source Academy frontend.
    * @param {DebuggerContext} context
    */
-  body: (context: any) => <Repeat context={context} />,
+  body(context: DebuggerContext) {
+    const { context: { moduleContexts: { physics2D: { state: { b2world } } } } } = context;
+
+    const canvasRef: React.RefObject<HTMLCanvasElement> = React.createRef();
+
+    setTimeout(() => {
+      const canvas = canvasRef.current;
+      const ctx: CanvasRenderingContext2D | null = canvas ? canvas.getContext('2d') : null;
+      if (ctx) {
+        const debugDraw = new DebugDraw(ctx);
+        debugDraw.Prepare(0, 0, 1, true);
+        DrawShapes(debugDraw, b2world);
+        debugDraw.Finish();
+      }
+    }, 50);
+
+    return (
+      <div>
+        <canvas ref={canvasRef}>
+        </canvas>
+      </div>
+    );
+  },
 
   /**
    * The Tab's icon tooltip in the side contents on Source Academy frontend.

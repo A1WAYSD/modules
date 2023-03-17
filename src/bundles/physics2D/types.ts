@@ -1,9 +1,22 @@
-import { b2Body, b2Shape, b2Fixture, b2BodyDef, b2BodyType, b2PolygonShape, b2StepConfig, b2Vec2, b2World, b2ContactListener, b2Contact, b2ContactEdge } from '@box2d/core';
-import { ReplResult } from '../../typings/type_helpers';
+import {
+  type b2Body,
+  type b2Shape,
+  type b2Fixture,
+  type b2BodyDef,
+  b2BodyType,
+  b2PolygonShape,
+  type b2StepConfig,
+  b2Vec2,
+  b2World,
+  b2ContactListener,
+  b2Contact,
+  b2ContactEdge,
+} from '@box2d/core';
+import { type ReplResult } from '../../typings/type_helpers';
 
-export class Vector2 extends b2Vec2 implements ReplResult{
+export class Vector2 extends b2Vec2 implements ReplResult {
   public toReplString = () => `[${this.x}, ${this.y}]`;
-};
+}
 
 export type Force = {
   direction: b2Vec2;
@@ -13,15 +26,15 @@ export type Force = {
 };
 
 type ForceWithPos = {
-  force: Force,
-  pos: b2Vec2,
-}
+  force: Force;
+  pos: b2Vec2;
+};
 
 type TouchingObjects = {
-  fix1: b2Fixture,
-  fix2: b2Fixture,
+  fix1: b2Fixture;
+  fix2: b2Fixture;
   start_time: number;
-}
+};
 
 export class Timer {
   private time: number;
@@ -77,18 +90,19 @@ export class PhysicsObject implements ReplResult {
   }
 
   public addForceAtAPoint(force: Force, pos: b2Vec2) {
-    this.forcesAtAPoint.push({force: force, pos: pos});
+    this.forcesAtAPoint.push({
+      force,
+      pos,
+    });
   }
 
   public applyForcesToCenter(world_time: number) {
-    this.forcesCentered = this.forcesCentered
-    .filter(
+    this.forcesCentered = this.forcesCentered.filter(
       (force: Force) => force.start_time + force.duration > world_time,
     );
 
-    const resForce = this.forcesCentered.filter(
-      (force: Force) => force.start_time < world_time,
-    )
+    const resForce = this.forcesCentered
+      .filter((force: Force) => force.start_time < world_time)
       .reduce(
         (resForce: b2Vec2, force: Force) => resForce.Add(force.direction.Scale(force.magnitude)),
         new b2Vec2(),
@@ -98,14 +112,16 @@ export class PhysicsObject implements ReplResult {
   }
 
   public applyForcesAtAPoint(world_time: number) {
-    this.forcesAtAPoint = this.forcesAtAPoint
-    .filter(
+    this.forcesAtAPoint = this.forcesAtAPoint.filter(
       (forceWithPos: ForceWithPos) => forceWithPos.force.start_time + forceWithPos.force.duration > world_time,
     );
 
-    this.forcesAtAPoint.forEach(forceWithPos => {
+    this.forcesAtAPoint.forEach((forceWithPos) => {
       const force = forceWithPos.force;
-      this.body.ApplyForce(force.direction.Scale(force.magnitude), forceWithPos.pos);
+      this.body.ApplyForce(
+        force.direction.Scale(force.magnitude),
+        forceWithPos.pos,
+      );
     });
   }
 
@@ -170,9 +186,8 @@ export class PhysicsWorld {
   private b2World: b2World;
   private b2Objects: PhysicsObject[];
   private timer: Timer;
-  
-  // private touchingObjects: TouchingObjects[];
 
+  // private touchingObjects: TouchingObjects[];
 
   private iterationsConfig: b2StepConfig = {
     velocityIterations: 8,
@@ -225,7 +240,10 @@ export class PhysicsWorld {
       position: new b2Vec2(0, height - 10),
     });
     const groundShape: b2PolygonShape = new b2PolygonShape()
-      .SetAsBox(10000, 10);
+      .SetAsBox(
+        10000,
+        10,
+      );
 
     groundBody.CreateFixture({
       shape: groundShape,
@@ -240,5 +258,19 @@ export class PhysicsWorld {
     }
     this.b2World.Step(dt, this.iterationsConfig);
     this.timer.step(dt);
+  }
+
+  public async simulate(dt: number, total: number) {
+    for (let i = 0; i < total; i += dt) {
+      this.update(dt);
+      // eslint-disable-next-line no-await-in-loop
+      await this.delay(i * dt * 1000);
+    }
+  }
+
+  private delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+  public getWorld() {
+    return this.b2World;
   }
 }
