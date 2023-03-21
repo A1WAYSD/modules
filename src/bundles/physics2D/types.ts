@@ -10,7 +10,7 @@ import {
   b2Vec2,
   b2World,
   b2ContactListener,
-  b2Contact
+  type b2Contact,
 } from '@box2d/core';
 import { type ReplResult } from '../../typings/type_helpers';
 
@@ -75,14 +75,14 @@ export class PhysicsObject implements ReplResult {
     this.fixture = this.body.CreateFixture({
       shape: this.shape,
       density: 1,
-      friction: 0.3,
+      friction: 1,
     });
   }
 
   public getFixture() {
     return this.fixture;
   }
-  
+
   public changeDensity(density: number) {
     this.fixture.SetDensity(density);
     this.body.ResetMassData();
@@ -197,7 +197,7 @@ export class PhysicsWorld {
   private b2World: b2World;
   private b2Objects: PhysicsObject[];
   private timer: Timer;
-  private touchingObjects: Map<b2Fixture,  Map<b2Fixture, number>>;
+  private touchingObjects: Map<b2Fixture, Map<b2Fixture, number>>;
 
   private iterationsConfig: b2StepConfig = {
     velocityIterations: 8,
@@ -208,23 +208,25 @@ export class PhysicsWorld {
     this.b2World = b2World.Create(new b2Vec2());
     this.b2Objects = [];
     this.timer = new Timer();
-    this.touchingObjects = new Map<b2Fixture,  Map<b2Fixture, number>>;
+    this.touchingObjects = new Map<b2Fixture, Map<b2Fixture, number>>();
 
     const contactListener: b2ContactListener = new b2ContactListener();
     contactListener.BeginContact = (contact: b2Contact) => {
       let m = this.touchingObjects.get(contact.GetFixtureA());
-      if (m == undefined) {
-        let newMap = new Map<b2Fixture, number>;
+      if (m === undefined) {
+        let newMap = new Map<b2Fixture, number>();
         newMap.set(contact.GetFixtureB(), this.timer.getTime());
         this.touchingObjects.set(contact.GetFixtureA(), newMap);
-      }
-      else {
+      } else {
         m.set(contact.GetFixtureB(), this.timer.getTime());
       }
-    }
+    };
     contactListener.EndContact = (contact: b2Contact) => {
-      this.touchingObjects.get(contact.GetFixtureA()).delete(contact.GetFixtureB());
-    }
+      const contacts = this.touchingObjects.get(contact.GetFixtureA());
+      if (contacts) {
+        contacts.delete(contact.GetFixtureB());
+      }
+    };
 
     this.b2World.SetContactListener(contactListener);
   }
@@ -278,6 +280,7 @@ World time: ${this.timer.toString()}
 Objects:
     `;
     this.b2Objects.forEach((obj) => {
+      console.log(obj.getMass());
       world_status += `
 ------------------------
 ${obj.toReplString()}
@@ -289,11 +292,11 @@ ${obj.toReplString()}
 
   public findImpact(obj1: PhysicsObject, obj2: PhysicsObject) {
     let m = this.touchingObjects.get(obj1.getFixture());
-    if (m == undefined) {
+    if (m === undefined) {
       return -1;
     }
     let time = m.get(obj2.getFixture());
-    if (time == undefined) {
+    if (time === undefined) {
       return -1;
     }
     return time;
