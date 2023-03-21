@@ -218,10 +218,10 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
 
 /**
  * Set density of the object.
- * 
+ *
  * @param obj existing object
  * @param density density
- * 
+ *
  * @category Body
  */
 export function set_density(obj: PhysicsObject, density: number) {
@@ -230,10 +230,10 @@ export function set_density(obj: PhysicsObject, density: number) {
 
 /**
  * Set friction of the object.
- * 
- * @param obj 
- * @param friction 
- * 
+ *
+ * @param obj
+ * @param friction
+ *
  * @category Body
  */
 export function set_friction(obj: PhysicsObject, friction: number) {
@@ -242,11 +242,11 @@ export function set_friction(obj: PhysicsObject, friction: number) {
 
 /**
  * Check if two objects is touching.
- * 
+ *
  * @param obj1
- * @param obj2 
+ * @param obj2
  * @returns touching state
- * 
+ *
  * @category Dynamics
  */
 export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
@@ -255,11 +255,11 @@ export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
 
 /**
  * Impact start time of two currently touching objects.
- * 
- * @param obj1 
- * @param obj2 
+ *
+ * @param obj1
+ * @param obj2
  * @returns impact start time
- * 
+ *
  * @category Dynamics
  */
 export function impact_start_time(obj1: PhysicsObject, obj2: PhysicsObject) {
