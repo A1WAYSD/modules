@@ -118,7 +118,7 @@ export function make_ground(height: number, friction: number) {
 // }
 
 /**
- * Make a box object with given initial position, rotation, velocity and size.
+ * Make a box object with given initial position, rotation, velocity, size and add it to the world.
  *
  * @param pos initial position vector of center
  * @param rot initial rotation
@@ -126,19 +126,19 @@ export function make_ground(height: number, friction: number) {
  * @param size size
  * @returns new box object
  *
- * @category Main
+ * @category Body
  */
-export function make_box_object(pos: Vector2,
+export function add_box_object(pos: Vector2,
   rot: number, velc: Vector2, size: Vector2): PhysicsObject {
   const newObj: PhysicsObject = new PhysicsObject(pos, rot, new b2PolygonShape()
     .SetAsBox(size.x / 2, size.y / 2), world);
   newObj.setLinearVelocity(velc);
-
+  world.addObject(newObj);
   return newObj;
 }
 
 /**
- * Make a circle object with given initial position, rotation, velocity and radius.
+ * Make a circle object with given initial position, rotation, velocity, radius and add it to the world.
  *
  * @param pos initial position vector of center
  * @param rot initial rotation
@@ -146,26 +146,15 @@ export function make_box_object(pos: Vector2,
  * @param radius radius
  * @returns new circle object
  *
- * @category Main
+ * @category Body
  */
-export function make_circle_object(pos: Vector2,
+export function add_circle_object(pos: Vector2,
   rot: number, velc: Vector2, radius: number): PhysicsObject {
   const newObj: PhysicsObject = new PhysicsObject(pos, rot, new b2CircleShape()
     .Set(new Vector2(), radius), world);
   newObj.setLinearVelocity(velc);
-
+  world.addObject(newObj);
   return newObj;
-}
-
-/**
- * Add the object to the world.
- *
- * @param obj existing object
- *
- * @category Main
- */
-export function add_to_world(obj: PhysicsObject) {
-  world.addObject(obj);
 }
 
 /**
@@ -197,7 +186,7 @@ export function simulate_world(dt: number, total_time: number) {
  * @param obj existing object
  * @returns position of center
  *
- * @category Main
+ * @category Body
  */
 export function get_position(obj: PhysicsObject): Vector2 {
   return new Vector2(obj.getPosition().x, obj.getPosition().y);
@@ -209,7 +198,7 @@ export function get_position(obj: PhysicsObject): Vector2 {
  * @param obj exisiting object
  * @returns velocity vector
  *
- * @category Main
+ * @category Body
  */
 export function get_velocity(obj: PhysicsObject): Vector2 {
   return new Vector2(obj.getVelocity().x, obj.getVelocity().y);
@@ -221,7 +210,7 @@ export function get_velocity(obj: PhysicsObject): Vector2 {
  * @param obj exisiting object
  * @returns angular velocity vector
  *
- * @category Main
+ * @category Body
  */
 export function get_angular_velocity(obj: PhysicsObject): Vector2 {
   return new Vector2(obj.getAngularVelocity());
@@ -233,12 +222,20 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
  * @param obj existing object
  * @param density density
  * 
- * @category Main
+ * @category Body
  */
 export function set_density(obj: PhysicsObject, density: number) {
   obj.changeDensity(density);
 }
 
+/**
+ * Set friction of the object.
+ * 
+ * @param obj 
+ * @param friction 
+ * 
+ * @category Body
+ */
 export function set_friction(obj: PhysicsObject, friction: number) {
   obj.changeFriction(friction);
 }
@@ -250,12 +247,21 @@ export function set_friction(obj: PhysicsObject, friction: number) {
  * @param obj2 
  * @returns touching state
  * 
- * @category Main
+ * @category Dynamics
  */
 export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
   return obj1.isTouching(obj2);
 }
 
+/**
+ * Impact start time of two currently touching objects.
+ * 
+ * @param obj1 
+ * @param obj2 
+ * @returns impact start time
+ * 
+ * @category Dynamics
+ */
 export function impact_start_time(obj1: PhysicsObject, obj2: PhysicsObject) {
   return world.findImpact(obj1, obj2);
 }
