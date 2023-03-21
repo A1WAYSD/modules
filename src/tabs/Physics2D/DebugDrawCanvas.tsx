@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { Button, Icon } from '@blueprintjs/core';
+import { Button, Icon, Slider } from '@blueprintjs/core';
 import { IconNames } from '@blueprintjs/icons';
 import { Tooltip2 } from '@blueprintjs/popover2';
 import React from 'react';
@@ -19,6 +19,12 @@ type DebugDrawCanvasState = {
 
   /** Boolean value indicating if the animation is playing */
   isPlaying: boolean;
+
+  /** Number value for the zoom level of the debug draw world */
+  zoomLevel: number;
+
+  /** Number value for the camera x coordinate in the debug draw world */
+  camX: number;
 };
 
 /**
@@ -54,6 +60,8 @@ DebugDrawCanvasState
     this.state = {
       animTimestamp: 0,
       isPlaying: false,
+      zoomLevel: 1,
+      camX: 0,
     };
 
     this.canvas = null;
@@ -82,7 +90,7 @@ DebugDrawCanvasState
       }
 
       if (this.debugDraw && this.world) {
-        this.debugDraw.Prepare(0, 0, 1, true);
+        this.debugDraw.Prepare(this.state.camX, 0, this.state.zoomLevel, true);
         DrawShapes(this.debugDraw, this.b2World);
         this.debugDraw.Finish();
       }
@@ -154,6 +162,32 @@ DebugDrawCanvasState
     }
   };
 
+  /**
+   * Event handler for slider component. Updates the canvas for any change in
+   * zoomLevel.
+   *
+   * @param newValue new zoom level
+   */
+  private onZoomSliderChangeHandler = (newValue: number) => {
+    this.setState(
+      { zoomLevel: newValue },
+      () => {},
+    );
+  };
+
+  /**
+   * Event handler for slider component. Updates the canvas for any change in
+   * camX.
+   *
+   * @param newValue new camera x coordinate
+   */
+  private onCameraSliderChangeHandler = (newValue: number) => {
+    this.setState(
+      { camX: newValue },
+      () => {},
+    );
+  };
+
   public render() {
     const buttons = (
       <div
@@ -177,6 +211,40 @@ DebugDrawCanvasState
               />
             </Button>
           </Tooltip2>
+        </div>
+        <div
+          style={{
+            marginLeft: '20px',
+            marginRight: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
+          <div>
+            <p>Zoom level: {this.state.zoomLevel.toFixed(2)}</p>
+            <Slider
+              value={this.state.zoomLevel}
+              stepSize={0.01}
+              labelValues={[]}
+              labelRenderer={false}
+              min={0.01}
+              max={8}
+              onChange={this.onZoomSliderChangeHandler}
+            />
+          </div>
+          <div>
+            <p>Camera X: {this.state.camX.toFixed(2)}</p>
+            <Slider
+              value={this.state.camX}
+              stepSize={10}
+              labelValues={[]}
+              labelRenderer={false}
+              min={-500}
+              max={500}
+              onChange={this.onCameraSliderChangeHandler}
+            />
+          </div>
         </div>
       </div>
     );

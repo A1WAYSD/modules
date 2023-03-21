@@ -48,7 +48,7 @@ export class Timer {
   }
 
   public toString() {
-    return `${this.time}`;
+    return `${this.time.toFixed(4)}`;
   }
 }
 
