@@ -164,6 +164,46 @@ export function add_circle_object(
 }
 
 /**
+ * Make a triangle object with given initial position, rotation, velocity, base, height and add it to the world.
+ *
+ * @param pos initial position vector of center
+ * @param rot initial rotation
+ * @param velc initial velocity vector
+ * @param base base
+ * @param height height
+ * @returns new triangle object
+ *
+ * @category Body
+ */
+export function add_triangle_object(
+  pos: Vector2,
+  rot: number,
+  velc: Vector2,
+  base: number,
+  height: number,
+): PhysicsObject {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+  const newObj: PhysicsObject = new PhysicsObject(
+    pos,
+    rot,
+    new b2PolygonShape()
+      .Set(
+        [
+          new Vector2(-base / 2, -height / 2),
+          new Vector2(base / 2, -height / 2),
+          new Vector2(0, height / 2),
+        ],
+      ),
+    world,
+  );
+  newObj.setVelocity(velc);
+  world.addObject(newObj);
+  return newObj;
+}
+
+/**
  * Update the world with a fixed time step.
  *
  * @param dt value of fixed time step

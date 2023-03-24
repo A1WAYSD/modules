@@ -13,6 +13,7 @@ export {
 
   add_box_object,
   add_circle_object,
+  add_triangle_object,
 
   set_density,
   set_friction,
