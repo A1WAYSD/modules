@@ -5,21 +5,33 @@
  */
 
 export {
-  make_vector,
   set_gravity,
-  add_box_object,
-  make_force,
-  update_world,
-  get_position,
-  get_velocity,
-  apply_force,
   make_ground,
+
+  make_vector,
+  make_force,
+
+  add_box_object,
   add_circle_object,
-  get_angular_velocity,
-  apply_force_to_center,
+
   set_density,
   set_friction,
+
+  get_position,
+  set_position,
+  get_rotation,
+  set_rotation,
+  get_velocity,
+  set_velocity,
+  get_angular_velocity,
+  set_angular_velocity,
+
+  apply_force,
+  apply_force_to_center,
+
   is_touching,
-  simulate_world,
   impact_start_time,
+
+  update_world,
+  simulate_world,
 } from './functions';

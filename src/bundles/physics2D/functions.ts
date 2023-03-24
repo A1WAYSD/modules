@@ -12,15 +12,16 @@
 import { context } from 'js-slang/moduleHelpers';
 
 import { b2CircleShape, b2PolygonShape } from '@box2d/core';
-import { type Force, PhysicsObject, PhysicsWorld, Vector2 } from './types';
+
+import { type Force, Vector2 } from './types';
+import { PhysicsObject } from './PhysicsObject';
+import { PhysicsWorld } from './PhysicsWorld';
 
 // Global Variables
 
-let world;
-
+let world : PhysicsWorld | null = null;
 
 // Module's Private Functions
-
 
 // Module's Exposed Functions
 
@@ -48,7 +49,12 @@ export function make_vector(x: number, y: number): Vector2 {
  *
  * @category Dynamics
  */
-export function make_force(dir: Vector2, mag: number, dur: number, start: number): Force {
+export function make_force(
+  dir: Vector2,
+  mag: number,
+  dur: number,
+  start: number,
+): Force {
   let force: Force = {
     direction: dir,
     magnitude: mag,
@@ -59,37 +65,12 @@ export function make_force(dir: Vector2, mag: number, dur: number, start: number
 }
 
 /**
- * Apply force to an object.
- *
- * @param force existing force
- * @param obj existing object the force applies on
- *
- * @category Dynamics
- */
-export function apply_force_to_center(force: Force, obj: PhysicsObject) {
-  obj.addForceCentered(force);
-}
-
-/**
- * Apply force to an object at a given world point.
- *
- * @param force existing force
- * @param pos world point the force is applied on
- * @param obj existing object the force applies on
- *
- * @category Dynamics
- */
-export function apply_force(force: Force, pos: Vector2, obj: PhysicsObject) {
-  obj.addForceAtAPoint(force, pos);
-}
-
-/**
  * Create a new physics world and set gravity of world.
  *
  * @param v gravity vector
  * @example
  * ```
- * set_gravity(0, -9.8); //gravity vector for real world
+ * set_gravity(0, -9.8); // gravity vector for real world
  * ```
  *
  * @category Main
@@ -111,11 +92,12 @@ export function set_gravity(v: Vector2) {
  * @category Main
  */
 export function make_ground(height: number, friction: number) {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+
   world.makeGround(height, friction);
 }
-// export function make_ground() {
-//   world.makeGround(-5);
-// }
 
 /**
  * Make a box object with given initial position, rotation, velocity, size and add it to the world.
@@ -128,11 +110,23 @@ export function make_ground(height: number, friction: number) {
  *
  * @category Body
  */
-export function add_box_object(pos: Vector2,
-  rot: number, velc: Vector2, size: Vector2): PhysicsObject {
-  const newObj: PhysicsObject = new PhysicsObject(pos, rot, new b2PolygonShape()
-    .SetAsBox(size.x / 2, size.y / 2), world);
-  newObj.setLinearVelocity(velc);
+export function add_box_object(
+  pos: Vector2,
+  rot: number,
+  velc: Vector2,
+  size: Vector2,
+): PhysicsObject {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+  const newObj: PhysicsObject = new PhysicsObject(
+    pos,
+    rot,
+    new b2PolygonShape()
+      .SetAsBox(size.x / 2, size.y / 2),
+    world,
+  );
+  newObj.setVelocity(velc);
   world.addObject(newObj);
   return newObj;
 }
@@ -148,11 +142,23 @@ export function add_box_object(pos: Vector2,
  *
  * @category Body
  */
-export function add_circle_object(pos: Vector2,
-  rot: number, velc: Vector2, radius: number): PhysicsObject {
-  const newObj: PhysicsObject = new PhysicsObject(pos, rot, new b2CircleShape()
-    .Set(new Vector2(), radius), world);
-  newObj.setLinearVelocity(velc);
+export function add_circle_object(
+  pos: Vector2,
+  rot: number,
+  velc: Vector2,
+  radius: number,
+): PhysicsObject {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+  const newObj: PhysicsObject = new PhysicsObject(
+    pos,
+    rot,
+    new b2CircleShape()
+      .Set(new Vector2(), radius),
+    world,
+  );
+  newObj.setVelocity(velc);
   world.addObject(newObj);
   return newObj;
 }
@@ -165,19 +171,26 @@ export function add_circle_object(pos: Vector2,
  * @category Main
  */
 export function update_world(dt: number) {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+
   world.update(dt);
 }
 
 /**
  * Simulate the world.
  *
- * @param dt value of fixed time step
  * @param total_time total time to simulate
  *
  * @category Main
  */
-export function simulate_world(dt: number, total_time: number) {
-  world.simulate(dt, total_time);
+export function simulate_world(total_time: number) {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+
+  world.simulate(total_time);
 }
 
 /**
@@ -190,6 +203,18 @@ export function simulate_world(dt: number, total_time: number) {
  */
 export function get_position(obj: PhysicsObject): Vector2 {
   return new Vector2(obj.getPosition().x, obj.getPosition().y);
+}
+
+/**
+ * Get rotation of the object at current world time.
+ *
+ * @param obj existing object
+ * @returns rotation of object
+ *
+ * @category Body
+ */
+export function get_rotation(obj: PhysicsObject): number {
+  return obj.getRotation();
 }
 
 /**
@@ -217,6 +242,54 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
 }
 
 /**
+ * Sets the position of the object.
+ *
+ * @param obj existing object
+ * @param pos new position
+ *
+ * @category Body
+ */
+export function set_position(obj: PhysicsObject, pos: Vector2): void {
+  obj.setPosition(pos);
+}
+
+/**
+ * Sets the rotation of the object.
+ *
+ * @param obj existing object
+ * @param rot new rotation
+ *
+ * @category Body
+ */
+export function set_rotation(obj: PhysicsObject, rot: number): void {
+  obj.setRotation(rot);
+}
+
+/**
+ * Sets current velocity of the object.
+ *
+ * @param obj exisiting object
+ * @param velc new velocity
+ *
+ * @category Body
+ */
+export function set_velocity(obj: PhysicsObject, velc: Vector2): void {
+  obj.setVelocity(velc);
+}
+
+/**
+ * Get current angular velocity of the object.
+ *
+ * @param obj exisiting object
+ * @param velc angular velocity number
+ *
+ * @category Body
+ */
+export function set_angular_velocity(obj: PhysicsObject, velc: number): void {
+  return obj.setAngularVelocity(velc);
+}
+
+/**
  * Set density of the object.
  *
  * @param obj existing object
@@ -225,7 +298,7 @@ export function get_angular_velocity(obj: PhysicsObject): Vector2 {
  * @category Body
  */
 export function set_density(obj: PhysicsObject, density: number) {
-  obj.changeDensity(density);
+  obj.setDensity(density);
 }
 
 /**
@@ -237,7 +310,7 @@ export function set_density(obj: PhysicsObject, density: number) {
  * @category Body
  */
 export function set_friction(obj: PhysicsObject, friction: number) {
-  obj.changeFriction(friction);
+  obj.setFriction(friction);
 }
 
 /**
@@ -263,5 +336,34 @@ export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
  * @category Dynamics
  */
 export function impact_start_time(obj1: PhysicsObject, obj2: PhysicsObject) {
+  if (!world) {
+    throw new Error('Please call set_gravity first!');
+  }
+
   return world.findImpact(obj1, obj2);
+}
+
+/**
+ * Apply force to an object.
+ *
+ * @param force existing force
+ * @param obj existing object the force applies on
+ *
+ * @category Dynamics
+ */
+export function apply_force_to_center(force: Force, obj: PhysicsObject) {
+  obj.addForceCentered(force);
+}
+
+/**
+ * Apply force to an object at a given world point.
+ *
+ * @param force existing force
+ * @param pos world point the force is applied on
+ * @param obj existing object the force applies on
+ *
+ * @category Dynamics
+ */
+export function apply_force(force: Force, pos: Vector2, obj: PhysicsObject) {
+  obj.addForceAtAPoint(force, pos);
 }
