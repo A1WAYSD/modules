@@ -20,6 +20,8 @@ import { PhysicsWorld } from './PhysicsWorld';
 // Global Variables
 
 let world : PhysicsWorld | null = null;
+const NO_WORLD = new Error('Please call set_gravity first!');
+const MULTIPLE_WORLDS = new Error('You may only call set_gravity once!');
 
 // Module's Private Functions
 
@@ -76,6 +78,10 @@ export function make_force(
  * @category Main
  */
 export function set_gravity(v: Vector2) {
+  if (world) {
+    throw MULTIPLE_WORLDS;
+  }
+
   world = new PhysicsWorld();
   context.moduleContexts.physics2D.state = {
     world,
@@ -93,7 +99,7 @@ export function set_gravity(v: Vector2) {
  */
 export function make_ground(height: number, friction: number) {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
 
   world.makeGround(height, friction);
@@ -117,7 +123,7 @@ export function add_box_object(
   size: Vector2,
 ): PhysicsObject {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
   const newObj: PhysicsObject = new PhysicsObject(
     pos,
@@ -149,7 +155,7 @@ export function add_circle_object(
   radius: number,
 ): PhysicsObject {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
   const newObj: PhysicsObject = new PhysicsObject(
     pos,
@@ -183,7 +189,7 @@ export function add_triangle_object(
   height: number,
 ): PhysicsObject {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
   const newObj: PhysicsObject = new PhysicsObject(
     pos,
@@ -212,7 +218,7 @@ export function add_triangle_object(
  */
 export function update_world(dt: number) {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
 
   world.update(dt);
@@ -227,7 +233,7 @@ export function update_world(dt: number) {
  */
 export function simulate_world(total_time: number) {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
 
   world.simulate(total_time);
@@ -377,7 +383,7 @@ export function is_touching(obj1: PhysicsObject, obj2: PhysicsObject) {
  */
 export function impact_start_time(obj1: PhysicsObject, obj2: PhysicsObject) {
   if (!world) {
-    throw new Error('Please call set_gravity first!');
+    throw NO_WORLD;
   }
 
   return world.findImpact(obj1, obj2);
