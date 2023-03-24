@@ -7,7 +7,7 @@ import { DebugDraw } from '@box2d/debug-draw';
 import { DrawShapes, type b2World } from '@box2d/core';
 
 import WebGLCanvas from '../common/webgl_canvas';
-import { type PhysicsWorld } from '../../bundles/physics2D/types';
+import { type PhysicsWorld } from '../../bundles/physics2D/PhysicsWorld';
 
 type DebugDrawCanvasProps = {
   world: PhysicsWorld;
@@ -25,6 +25,9 @@ type DebugDrawCanvasState = {
 
   /** Number value for the camera x coordinate in the debug draw world */
   camX: number;
+
+  /** Number value for the update step in the debug draw world */
+  updateStep: number;
 };
 
 /**
@@ -62,6 +65,7 @@ DebugDrawCanvasState
       isPlaying: false,
       zoomLevel: 1,
       camX: 0,
+      updateStep: 0.01,
     };
 
     this.canvas = null;
@@ -148,7 +152,7 @@ DebugDrawCanvasState
       },
     );
 
-    this.world.update(currentFrame / 1000);
+    this.world.update(this.state.updateStep);
   };
 
   /**
@@ -184,6 +188,19 @@ DebugDrawCanvasState
   private onCameraSliderChangeHandler = (newValue: number) => {
     this.setState(
       { camX: newValue },
+      () => {},
+    );
+  };
+
+  /**
+   * Event handler for slider component. Updates the canvas for any change in
+   * updateStep.
+   *
+   * @param newValue new camera x coordinate
+   */
+  private onUpdateStepSliderChangeHandler = (newValue: number) => {
+    this.setState(
+      { updateStep: newValue },
       () => {},
     );
   };
@@ -233,7 +250,7 @@ DebugDrawCanvasState
               onChange={this.onZoomSliderChangeHandler}
             />
           </div>
-          <div>
+          <div style={{ marginTop: '10px' }}>
             <p>Camera X: {this.state.camX.toFixed(2)}</p>
             <Slider
               value={this.state.camX}
@@ -243,6 +260,18 @@ DebugDrawCanvasState
               min={-500}
               max={500}
               onChange={this.onCameraSliderChangeHandler}
+            />
+          </div>
+          <div style={{ marginTop: '10px' }}>
+            <p>Update step: {this.state.updateStep.toFixed(4)}</p>
+            <Slider
+              value={this.state.updateStep}
+              stepSize={0.001}
+              labelValues={[]}
+              labelRenderer={false}
+              min={0.001}
+              max={0.1}
+              onChange={this.onUpdateStepSliderChangeHandler}
             />
           </div>
         </div>
