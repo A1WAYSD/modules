@@ -17,7 +17,7 @@ import { Timer } from './types';
 
 export class PhysicsWorld {
   private b2World: b2World;
-  private b2Objects: PhysicsObject[];
+  private physicsObjects: PhysicsObject[];
   private timer: Timer;
   private touchingObjects: Map<b2Fixture, Map<b2Fixture, number>>;
 
@@ -28,7 +28,7 @@ export class PhysicsWorld {
 
   constructor() {
     this.b2World = b2World.Create(new b2Vec2());
-    this.b2Objects = [];
+    this.physicsObjects = [];
     this.timer = new Timer();
     this.touchingObjects = new Map<b2Fixture, Map<b2Fixture, number>>();
 
@@ -58,7 +58,7 @@ export class PhysicsWorld {
   }
 
   public addObject(obj: PhysicsObject) {
-    this.b2Objects.push(obj);
+    this.physicsObjects.push(obj);
   }
 
   public createBody(bodyDef: b2BodyDef) {
@@ -84,7 +84,7 @@ export class PhysicsWorld {
   }
 
   public update(dt: number) {
-    for (let obj of this.b2Objects) {
+    for (let obj of this.physicsObjects) {
       obj.applyForces(this.timer.getTime());
     }
     this.b2World.Step(dt, this.iterationsConfig);
@@ -108,7 +108,7 @@ export class PhysicsWorld {
   
   Objects:
       `;
-    this.b2Objects.forEach((obj) => {
+    this.physicsObjects.forEach((obj) => {
       console.log(obj.getMass());
       world_status += `
   ------------------------

@@ -98,7 +98,7 @@ export class PhysicsObject implements ReplResult {
     });
   }
 
-  public applyForcesToCenter(world_time: number) {
+  private applyForcesToCenter(world_time: number) {
     this.forcesCentered = this.forcesCentered.filter(
       (force: Force) => force.start_time + force.duration > world_time,
     );
@@ -113,7 +113,7 @@ export class PhysicsObject implements ReplResult {
     this.body.ApplyForceToCenter(resForce);
   }
 
-  public applyForcesAtAPoint(world_time: number) {
+  private applyForcesAtAPoint(world_time: number) {
     this.forcesAtAPoint = this.forcesAtAPoint.filter(
       (forceWithPos: ForceWithPos) => forceWithPos.force.start_time + forceWithPos.force.duration > world_time,
     );
