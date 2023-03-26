@@ -22,10 +22,11 @@ export class PhysicsObject implements ReplResult {
     position: b2Vec2,
     rotation: number,
     shape: b2Shape,
+    isStatic: boolean,
     world: PhysicsWorld,
   ) {
     this.body = world.createBody({
-      type: b2BodyType.b2_dynamicBody,
+      type: isStatic ? b2BodyType.b2_staticBody : b2BodyType.b2_dynamicBody,
       position,
       angle: rotation,
     });

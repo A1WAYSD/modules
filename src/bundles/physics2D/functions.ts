@@ -121,6 +121,7 @@ export function add_box_object(
   rot: number,
   velc: Vector2,
   size: Vector2,
+  isStatic: boolean,
 ): PhysicsObject {
   if (!world) {
     throw NO_WORLD;
@@ -130,6 +131,7 @@ export function add_box_object(
     rot,
     new b2PolygonShape()
       .SetAsBox(size.x / 2, size.y / 2),
+    isStatic,
     world,
   );
   newObj.setVelocity(velc);
@@ -153,6 +155,7 @@ export function add_circle_object(
   rot: number,
   velc: Vector2,
   radius: number,
+  isStatic: boolean,
 ): PhysicsObject {
   if (!world) {
     throw NO_WORLD;
@@ -162,6 +165,7 @@ export function add_circle_object(
     rot,
     new b2CircleShape()
       .Set(new Vector2(), radius),
+    isStatic,
     world,
   );
   newObj.setVelocity(velc);
@@ -187,6 +191,7 @@ export function add_triangle_object(
   velc: Vector2,
   base: number,
   height: number,
+  isStatic: boolean,
 ): PhysicsObject {
   if (!world) {
     throw NO_WORLD;
@@ -202,6 +207,7 @@ export function add_triangle_object(
           new Vector2(0, height / 2),
         ],
       ),
+    isStatic,
     world,
   );
   newObj.setVelocity(velc);
