@@ -413,3 +413,27 @@ export function apply_force_to_center(force: Force, obj: PhysicsObject) {
 export function apply_force(force: Force, pos: Vector2, obj: PhysicsObject) {
   obj.addForceAtAPoint(force, pos);
 }
+
+/**
+ * Converts a 2d vector into an array.
+ *
+ * @param vec 2D vector to convert
+ * @returns array with [x, y]
+ *
+ * @category Main
+ */
+export function vector_to_array(vec: Vector2) {
+  return [vec.x, vec.y];
+}
+
+/**
+ * Converts an array of 2 numbers into a 2d vector.
+ *
+ * @param arr array with [x, y]
+ * @returns vector 2d
+ *
+ * @category Main
+ */
+export function array_to_vector([x, y]: [number, number]) {
+  return new Vector2(x, y);
+}

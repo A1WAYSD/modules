@@ -6,7 +6,7 @@ import { type ReplResult } from '../../typings/type_helpers';
 
 export const ACCURACY = 2;
 export class Vector2 extends b2Vec2 implements ReplResult {
-  public toReplString = () => `[${this.x}, ${this.y}]`;
+  public toReplString = () => `Vector2D: [${this.x}, ${this.y}]`;
 }
 
 export type Force = {

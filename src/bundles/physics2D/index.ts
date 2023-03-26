@@ -35,4 +35,7 @@ export {
 
   update_world,
   simulate_world,
+
+  vector_to_array,
+  array_to_vector,
 } from './functions';
