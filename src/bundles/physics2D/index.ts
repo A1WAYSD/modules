@@ -7,6 +7,7 @@
 export {
   set_gravity,
   make_ground,
+  add_wall,
 
   make_vector,
   make_force,

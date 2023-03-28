@@ -105,6 +105,32 @@ export function make_ground(height: number, friction: number) {
   world.makeGround(height, friction);
 }
 
+
+/**
+ * Make a wall (static box object with no velocity)
+ *
+ * @param pos position of the wall
+ * @param rot rotation of the wall
+ * @param size size of the wall
+ * @returns new box (wall) object
+ *
+ * @category Main
+ */
+export function add_wall(pos: Vector2, rot: number, size: Vector2) {
+  if (!world) {
+    throw NO_WORLD;
+  }
+
+  return world.addObject(new PhysicsObject(
+    pos,
+    rot,
+    new b2PolygonShape()
+      .SetAsBox(size.x / 2, size.y / 2),
+    true,
+    world,
+  ));
+}
+
 /**
  * Make a box object with given initial position, rotation, velocity, size and add it to the world.
  *
@@ -135,8 +161,7 @@ export function add_box_object(
     world,
   );
   newObj.setVelocity(velc);
-  world.addObject(newObj);
-  return newObj;
+  return world.addObject(newObj);
 }
 
 /**
@@ -169,8 +194,7 @@ export function add_circle_object(
     world,
   );
   newObj.setVelocity(velc);
-  world.addObject(newObj);
-  return newObj;
+  return world.addObject(newObj);
 }
 
 /**
@@ -211,8 +235,7 @@ export function add_triangle_object(
     world,
   );
   newObj.setVelocity(velc);
-  world.addObject(newObj);
-  return newObj;
+  return world.addObject(newObj);
 }
 
 /**

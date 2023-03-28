@@ -59,6 +59,7 @@ export class PhysicsWorld {
 
   public addObject(obj: PhysicsObject) {
     this.physicsObjects.push(obj);
+    return obj;
   }
 
   public createBody(bodyDef: b2BodyDef) {
