@@ -377,6 +377,21 @@ export function set_density(obj: PhysicsObject, density: number) {
 }
 
 /**
+ * Resize the object.
+ *
+ * @param obj
+ * @param scale
+ *
+ * @category Body
+ */
+export function scale_size(obj: PhysicsObject, scale: number) {
+  if (!world) {
+    throw NO_WORLD;
+  }
+  obj.scale_size(scale);
+}
+
+/**
  * Set friction of the object.
  *
  * @param obj

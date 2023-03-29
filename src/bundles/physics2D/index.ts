@@ -18,6 +18,7 @@ export {
 
   set_density,
   set_friction,
+  scale_size,
 
   get_position,
   set_position,
