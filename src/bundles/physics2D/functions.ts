@@ -481,3 +481,11 @@ export function vector_to_array(vec: Vector2) {
 export function array_to_vector([x, y]: [number, number]) {
   return new Vector2(x, y);
 }
+
+export function add_vector(vec1: Vector2, vec2: Vector2) {
+  return new Vector2(vec1.x + vec2.x, vec1.y + vec2.y);
+}
+
+export function subtract_vector(vec1: Vector2, vec2: Vector2) {
+  return new Vector2(vec1.x - vec2.x, vec1.y - vec2.y);
+}

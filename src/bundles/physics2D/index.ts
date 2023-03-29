@@ -10,6 +10,8 @@ export {
   add_wall,
 
   make_vector,
+  add_vector,
+  subtract_vector,
   make_force,
 
   add_box_object,
