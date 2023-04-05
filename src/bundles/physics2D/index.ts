@@ -1,7 +1,7 @@
 /**
  * Bundle for Source Academy physics2D module
- * @author Author Name
- * @author Author Name
+ * @author Muhammad Fikri Bin Abdul Kalam
+ * @author Yu Jiali
  */
 
 export {
@@ -10,8 +10,6 @@ export {
   add_wall,
 
   make_vector,
-  add_vector,
-  subtract_vector,
   make_force,
 
   add_box_object,
@@ -42,4 +40,6 @@ export {
 
   vector_to_array,
   array_to_vector,
+  add_vector,
+  subtract_vector,
 } from './functions';

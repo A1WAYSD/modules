@@ -1,12 +1,40 @@
 /* eslint-disable new-cap */
 /**
- * Physics2D
+ * A *vector* is defined by its coordinates (x and y). The 2D vector is used to 
+ * represent direction, size, position, velocity and other physical attributes in
+ * the physics world. Transformation between vector and array, add and subtract 
+ * vectors are supported.
  *
- * Sentences describing the module. More sentences about the module.
+ * A *world* is the single physics world the module is based on. `set_gravity` needs
+ * to be called to create and set gravity of the world and could only be called once.
+ * `make_ground` and `add_wall` are optional settings of the world. After adding objects 
+ * to the world, calling `update_world` will simulate the world. The suggested time step
+ * is 1/60 (seconds).
+ * 
+ * An *object* is created by its shape, position, velocity, size, rotation and state
+ * with the add function. Get and set functions are provided to change the objects'
+ * physical attributes like density and friction. Two options of `apply_force` are 
+ * useful to change behavior of objects at specific time. Detection of collision and
+ * precise starting time are provided by `is_touching` and `impact_start_time`.
+ *
+ * visualization of the physics world is shown in the display tab
+ * 
+ * The following example simulates a free fall of a circle object.
+ * ```
+ * import { set_gravity, make_vector, add_circle_object, update_world} from "physics2D";
+ * const gravity = make_vector(0, -9.8);
+ * set_gravity(gravity);
+ * const pos = make_vector(0, 100);
+ * const velc = make_vector(0, 0);
+ * add_circle_object(pos, 0, velc, 10, false);
+ * for (let i = 0; i < 10; i = i + 1) {
+ *   update_world(1/60);
+ * }
+ * ```
  *
  * @module physics2D
- * @author Author Name
- * @author Author Name
+ * @author Muhammad Fikri Bin Abdul Kalam
+ * @author Yu Jiali
  */
 
 import { context } from 'js-slang/moduleHelpers';
@@ -22,8 +50,6 @@ import { PhysicsWorld } from './PhysicsWorld';
 let world : PhysicsWorld | null = null;
 const NO_WORLD = new Error('Please call set_gravity first!');
 const MULTIPLE_WORLDS = new Error('You may only call set_gravity once!');
-
-// Module's Private Functions
 
 // Module's Exposed Functions
 
@@ -107,7 +133,7 @@ export function make_ground(height: number, friction: number) {
 
 
 /**
- * Make a wall (static box object with no velocity)
+ * Make a wall (static box object with no velocity).
  *
  * @param pos position of the wall
  * @param rot rotation of the wall
@@ -379,8 +405,8 @@ export function set_density(obj: PhysicsObject, density: number) {
 /**
  * Resize the object.
  *
- * @param obj
- * @param scale
+ * @param obj existinig object
+ * @param scale scaling size
  *
  * @category Body
  */
