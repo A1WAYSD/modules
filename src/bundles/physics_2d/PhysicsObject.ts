@@ -4,7 +4,7 @@ import {
   type b2Shape,
   type b2Fixture,
   b2BodyType,
-  b2CircleShape, 
+  b2CircleShape,
   b2PolygonShape,
   b2Vec2,
 } from '@box2d/core';
@@ -160,24 +160,26 @@ export class PhysicsObject implements ReplResult {
     .toFixed(ACCURACY)}
   AngularVelocity: [${this.getAngularVelocity()
     .toFixed(ACCURACY)}]`;
-  
+
   public scale_size(scale: number) {
     if (this.shape instanceof b2CircleShape) {
-      this.shape.m_radius = this.shape.m_radius * scale;
-    }
-    else if (this.shape instanceof b2PolygonShape) {
+      this.shape.m_radius *= scale;
+    } else if (this.shape instanceof b2PolygonShape) {
       let centroid: b2Vec2 = this.shape.m_centroid;
       let arr: b2Vec2[] = [];
-      this.shape.m_vertices.forEach((vec) => {arr.push(new b2Vec2(centroid.x + scale * (vec.x - centroid.x), 
-        centroid.y + scale * (vec.y - centroid.y)))});
-      this.shape = new b2PolygonShape().Set(arr);
+      this.shape.m_vertices.forEach((vec) => {
+        arr.push(new b2Vec2(centroid.x + scale * (vec.x - centroid.x),
+          centroid.y + scale * (vec.y - centroid.y)));
+      });
+      this.shape = new b2PolygonShape()
+        .Set(arr);
     }
     let f: b2Fixture = this.fixture;
     this.body.DestroyFixture(this.fixture);
     this.fixture = this.body.CreateFixture({
-      shape: this.shape, 
-      density: f.GetDensity(),        
+      shape: this.shape,
+      density: f.GetDensity(),
       friction: f.GetFriction(),
     });
-  }  
+  }
 }

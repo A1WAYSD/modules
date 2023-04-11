@@ -1,24 +1,24 @@
 /* eslint-disable new-cap */
 /**
- * A *vector* is defined by its coordinates (x and y). The 2D vector is used to 
+ * A *vector* is defined by its coordinates (x and y). The 2D vector is used to
  * represent direction, size, position, velocity and other physical attributes in
- * the physics world. Transformation between vector and array, add and subtract 
+ * the physics world. Transformation between vector and array, add and subtract
  * vectors are supported.
  *
  * A *world* is the single physics world the module is based on. `set_gravity` needs
  * to be called to create and set gravity of the world and could only be called once.
- * `make_ground` and `add_wall` are optional settings of the world. After adding objects 
+ * `make_ground` and `add_wall` are optional settings of the world. After adding objects
  * to the world, calling `update_world` will simulate the world. The suggested time step
  * is 1/60 (seconds).
- * 
+ *
  * An *object* is created by its shape, position, velocity, size, rotation and state
  * with the add function. Get and set functions are provided to change the objects'
- * physical attributes like density and friction. Two options of `apply_force` are 
+ * physical attributes like density and friction. Two options of `apply_force` are
  * useful to change behavior of objects at specific time. Detection of collision and
  * precise starting time are provided by `is_touching` and `impact_start_time`.
  *
  * visualization of the physics world is shown in the display tab
- * 
+ *
  * The following example simulates a free fall of a circle object.
  * ```
  * import { set_gravity, make_vector, add_circle_object, update_world} from "physics2D";
