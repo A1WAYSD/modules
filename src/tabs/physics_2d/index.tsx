@@ -27,7 +27,7 @@ export default {
    * @param {DebuggerContext} context
    */
   body(context: DebuggerContext) {
-    const { context: { moduleContexts: { physics2D: { state: { world } } } } } = context;
+    const { context: { moduleContexts: { physics_2d: { state: { world } } } } } = context;
 
     return (
       <div>

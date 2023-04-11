@@ -21,7 +21,7 @@
  *
  * The following example simulates a free fall of a circle object.
  * ```
- * import { set_gravity, make_vector, add_circle_object, update_world} from "physics2D";
+ * import { set_gravity, make_vector, add_circle_object, update_world} from "physics_2d";
  * const gravity = make_vector(0, -9.8);
  * set_gravity(gravity);
  * const pos = make_vector(0, 100);
@@ -109,7 +109,7 @@ export function set_gravity(v: Vector2) {
   }
 
   world = new PhysicsWorld();
-  context.moduleContexts.physics2D.state = {
+  context.moduleContexts.physics_2d.state = {
     world,
   };
   world.setGravity(v);

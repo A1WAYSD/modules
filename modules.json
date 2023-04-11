@@ -73,9 +73,9 @@
       "Repl"
     ]
   },
-  "physics2D": {
+  "physics_2d": {
     "tabs": [
-      "Physics2D"
+      "physics_2d"
     ]
   }
 }
