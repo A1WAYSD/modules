@@ -1,5 +1,5 @@
 /**
- * Bundle for Source Academy physics2D module
+ * Bundle for Source Academy physics_2d module
  * @author Muhammad Fikri Bin Abdul Kalam
  * @author Yu Jiali
  */

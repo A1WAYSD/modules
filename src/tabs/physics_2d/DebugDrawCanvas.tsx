@@ -7,7 +7,7 @@ import { DebugDraw } from '@box2d/debug-draw';
 import { DrawShapes, type b2World } from '@box2d/core';
 
 import WebGLCanvas from '../common/webgl_canvas';
-import { type PhysicsWorld } from '../../bundles/physics2D/PhysicsWorld';
+import { type PhysicsWorld } from '../../bundles/physics_2d/PhysicsWorld';
 
 type DebugDrawCanvasProps = {
   world: PhysicsWorld;
